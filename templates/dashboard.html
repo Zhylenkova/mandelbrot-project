@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mandelbrot Monitoring Dashboard</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a1a; color: #eee; margin: 40px; }
+        .container { max-width: 1000px; margin: auto; }
+        .card { background: #2d2d2d; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        h1 { color: #00adb5; }
+        .progress-bar { width: 100%; background: #444; height: 30px; border-radius: 15px; overflow: hidden; margin-top: 10px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #00adb5, #00f2fe); width: 0%; transition: width 0.5s; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #444; }
+        th { color: #00adb5; }
+        .status-connected { color: #2ecc71; }
+        .status-stale { color: #f1c40f; }
+        .status-disconnected { color: #e74c3c; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mandelbrot Distributed Monitor</h1>
+        
+        <div class="card">
+            <h2>Overall Progress</h2>
+            <div id="progress-text">0% (0 / 800 rows)</div>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <div style="margin-top: 20px; display: flex; justify-content: space-around;">
+                <div>Queue: <span id="tasks-queued" style="color: #00adb5;">0</span></div>
+                <div>Pending: <span id="tasks-pending" style="color: #f1c40f;">0</span></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Active Workers</h2>
+            <table id="workers-table">
+                <thead>
+                    <tr>
+                        <th>Worker ID</th>
+                        <th>Address</th>
+                        <th>Tasks Done</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function updateStats() {
+            fetch('/stats')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('progress-fill').style.width = data.progress + '%';
+                    document.getElementById('progress-text').innerText = Math.round(data.progress) + '% (' + data.completed_rows + ' / 800 rows)';
+                    document.getElementById('tasks-queued').innerText = data.tasks_queued;
+                    document.getElementById('tasks-pending').innerText = data.tasks_pending;
+
+                    const tbody = document.querySelector('#workers-table tbody');
+                    tbody.innerHTML = '';
+                    for (const [id, info] of Object.entries(data.workers)) {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${id}</td>
+                            <td>${info.address[0]}:${info.address[1]}</td>
+                            <td>${info.tasks_done}</td>
+                            <td class="status-${info.status}">${info.status.toUpperCase()}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    }
+                });
+        }
+
+        setInterval(updateStats, 1000);
+        updateStats();
+    </script>
+</body>
+</html>

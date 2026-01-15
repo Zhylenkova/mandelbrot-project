@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  master:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    ports:
+      - "5001:5001"
+      - "65433:65433"
+    environment:
+      - MASTER_HOST=0.0.0.0
+      - MASTER_PORT=65433
+      - WEB_PORT=5001
+    volumes:
+      - .:/app/output
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      - MASTER_HOST=master
+      - MASTER_PORT=65433
+    depends_on:
+      - master
+    deploy:
+      replicas: 3
