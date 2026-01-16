@@ -1,4 +1,4 @@
-# Rozproszony Generator Fraktali - Wersja Zaawansowana
+# Rozproszony Generator Fraktali
 
 ## Opis Projektu
 Projekt to zaawansowany system rozproszony do generowania zbioru Mandelbrota. Wykorzystuje architekturę **Master-Worker**, zaawansowaną komunikację sieciową oraz równoległość procesów.
