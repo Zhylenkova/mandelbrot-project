@@ -19,9 +19,9 @@ app = Flask(__name__)
 class MandelbrotServer:
     def __init__(self):
         self.tasks = [(i, i + CHUNK_SIZE) for i in range(0, HEIGHT, CHUNK_SIZE)]
-        self.pending_tasks = {}  # (start, end) -> (worker_id, timestamp)
+        self.pending_tasks = {}  
         self.results = {}
-        self.workers = {}  # worker_id -> {status, last_seen, performance}
+        self.workers = {} 
         self.completed_rows = 0
         self.lock = threading.Lock()
         self.running = True
@@ -62,9 +62,8 @@ class MandelbrotServer:
                 with self.lock:
                     if not self.tasks:
                         if not self.pending_tasks:
-                            break  # Everything done
+                            break  
                         else:
-                            # Wait and see if pending tasks come back (handled by cleanup)
                             time.sleep(1)
                             continue
                     
@@ -123,7 +122,7 @@ class MandelbrotServer:
             with self.lock:
                 to_reassign = []
                 for task_range, (worker_id, timestamp) in list(self.pending_tasks.items()):
-                    if now - timestamp > 30:  # Timeout 30 seconds
+                    if now - timestamp > 30: 
                         print(f"Task {task_range} timed out from {worker_id}. Reassigning.")
                         to_reassign.append(task_range)
                         del self.pending_tasks[task_range]
@@ -131,7 +130,6 @@ class MandelbrotServer:
                 for task in to_reassign:
                     self.tasks.append(task)
                 
-                # Mark workers as stale
                 for w_id, info in self.workers.items():
                     if info['status'] == 'connected' and now - info['last_seen'] > 35:
                         info['status'] = 'stale'
@@ -144,7 +142,7 @@ class MandelbrotServer:
             row = self.results.get(y)
             if row:
                 for x, color in enumerate(row):
-                    pixels[x, y] = (color, int(color*0.5), 255-color) # More interesting colors
+                    pixels[x, y] = (color, int(color*0.5), 255-color)
         img.save('mandelbrot_advanced.png')
         print("Saved as mandelbrot_advanced.png")
 
@@ -176,7 +174,6 @@ if __name__ == "__main__":
     # Start Socket Server
     server.start_socket_server()
     
-    # Wait for completion and wrap up
     while server.completed_rows < HEIGHT:
         time.sleep(1)
     
