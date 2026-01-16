@@ -17,7 +17,7 @@ Projekt to zaawansowany system rozproszony do generowania zbioru Mandelbrota. Wy
 5.  **Kolorowanie i Estetyka:**
     *   Zmodyfikowane mapowanie kolorów dla bardziej atrakcyjnego wizualnie efektu końcowego.
 
-## Obsługa Docker (Wersja 3.0)
+## Obsługa Docker
 Projekt został w pełni zdokeryzowany, co pozwala na uruchomienie całego klastra (Master + 3 Workery) jedną komendą.
 
 ### Wymagania
