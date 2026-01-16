@@ -3,7 +3,7 @@
 ## Opis Projektu
 Projekt to zaawansowany system rozproszony do generowania zbioru Mandelbrota. Wykorzystuje architekturę **Master-Worker**, zaawansowaną komunikację sieciową oraz równoległość procesów.
 
-## Kluczowe Funkcjonalności (Wersja 2.0)
+## Kluczowe Funkcjonalności
 1.  **Odporność na błędy (Fault Tolerance):**
     *   Serwer monitoruje czas pracy workerów.
     *   Jeśli worker nie zwróci wyniku w ciągu 30 sekund, jego zadanie jest automatycznie przywracane do kolejki i przydzielane innej maszynie.
