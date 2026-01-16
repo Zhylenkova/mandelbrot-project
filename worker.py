@@ -26,15 +26,12 @@ def calculate_julia(z, c_constant, max_iter):
 def worker_calculation(row_index, width, height, max_iter):
     row_pixels = []
     y_coord = (row_index / height) * 2 - 1
-    
-    # Example Julia constant
+
     julia_c = complex(-0.7, 0.27015)
     
     for x in range(width):
         x_coord = (x / width) * 3 - 2
         
-        # Toggle between Mandelbrot and Julia for demo (alternating rows or similar)
-        # Here we'll stick to Mandelbrot but include logic for switchability
         c = complex(x_coord, y_coord)
         val = calculate_mandelbrot(c, max_iter)
         
@@ -66,7 +63,6 @@ def start_worker():
         print("Connected to server.")
 
         while True:
-            # Receive task chunk
             data = b""
             while True:
                 packet = client_socket.recv(4096)
@@ -81,18 +77,15 @@ def start_worker():
             task_info = pickle.loads(data)
             start, end = task_info['range']
             w, h, mi = task_info['width'], task_info['height'], task_info['max_iter']
-            
-            # Feed tasks to local pool
+
             num_tasks = end - start
             for i in range(start, min(end, h)):
                 task_queue.put((i, w, h, mi))
             
-            # Collect results for this chunk
             chunk_results = []
             for _ in range(num_tasks):
                 chunk_results.append(result_queue.get())
             
-            # Send results back
             client_socket.sendall(pickle.dumps(chunk_results) + b"DONE_RESULT")
 
     except Exception as e:
